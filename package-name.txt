@@ -1,1 +1,1 @@
-dev.leios.kde-plasma.digitalclock
+dev.leios.theme-packages.plasmoids.digitalclock
