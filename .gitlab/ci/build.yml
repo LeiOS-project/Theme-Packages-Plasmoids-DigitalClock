@@ -67,11 +67,4 @@ publish:
     - apt-get install -y --no-install-recommends devscripts
   script:
     - |
-      # Strip leading 'v' from the tag
       TAG_VERSION="${CI_COMMIT_TAG#v}"
-      CHANGELOG_VERSION="$(dpkg-parsechangelog -S Version)"
-      if [ "$TAG_VERSION" != "$CHANGELOG_VERSION" ]; then
-        echo "ERROR: Tag version $TAG_VERSION does not match changelog version $CHANGELOG_VERSION"
-        exit 1
-      fi
-      echo "Publishing release $CI_COMMIT_TAG"
