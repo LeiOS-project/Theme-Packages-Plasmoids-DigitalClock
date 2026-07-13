@@ -1,7 +1,6 @@
 stages:
   - build
-  - release
-  - publish
+  - release_and_publish
 
 variables:
   DEBIAN_FRONTEND: noninteractive

@@ -1,4 +1,4 @@
-leios.theme.plasmoids.digitalclock (1.0.0-1) unstable; urgency=medium
+leios.theme.plasmoids.digitalclock (1.0.0) unstable; urgency=medium
 
   * Initial release.
   * Fork of KDE Plasma Digital Clock plasmoid for LeiOS.
