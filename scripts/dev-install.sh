@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 #
-# Reloads a Plasma 6 plasmoid and restarts the desktop shell.
+# Installs the DigitalClock plasmoid to the system for development purposes.
 #
 # Usage:
-#   ./reload-plasmoid.sh
+#   ./scripts/dev-install.sh
 
 set -euo pipefail
 

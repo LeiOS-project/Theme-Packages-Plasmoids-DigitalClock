@@ -1,0 +1,17 @@
+/locale-check
+/debian/tmp
+/debian/files
+/debian/changelog
+/debian/.debhelper
+/debian/*.log
+/debian/leios.theme.plasmoids.digitalclock
+
+build/
+leios.theme.plasmoids.digitalclock_*.dsc
+leios.theme.plasmoids.digitalclock_*.tar.xz
+leios.theme.plasmoids.digitalclock_*.deb
+leios.theme.plasmoids.digitalclock_*.changes
+leios.theme.plasmoids.digitalclock_*.buildinfo
+leios.theme.plasmoids.digitalclock_*.udeb
+leios.theme.plasmoids.digitalclock_*.tar.gz
+leios.theme.plasmoids.digitalclock_*.xz
