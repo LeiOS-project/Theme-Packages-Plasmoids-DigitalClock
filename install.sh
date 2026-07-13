@@ -15,6 +15,6 @@ sudo chown -R root:root /usr/share/plasma/plasmoids/dev.leios.theme-packages.pla
 
 systemctl --user stop plasma-plasmashell.service
 
-rm -rf ~/.cache/plasma* ~/.cache/*.kcache
+rm -rf ~/.cache/plasma* ~/.cache/*.kcache ~/.cache/plasmashell/qmlcache/
 
 systemctl --user start plasma-plasmashell.service
