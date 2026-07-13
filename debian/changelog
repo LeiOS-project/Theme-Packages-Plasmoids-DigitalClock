@@ -1,0 +1,7 @@
+leios.theme.plasmoids.digitalclock (1.0.0-1) unstable; urgency=medium
+
+  * Initial release.
+  * Fork of KDE Plasma Digital Clock plasmoid for LeiOS.
+  * Fix spacing bug in automatic date display mode.
+
+ -- Linus Fischer <leicraft@leicraftmc.de>  Mon, 13 Jul 2026 12:00:00 +0200

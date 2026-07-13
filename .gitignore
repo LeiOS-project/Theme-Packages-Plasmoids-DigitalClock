@@ -2,16 +2,18 @@
 /debian/tmp
 /debian/files
 # /debian/changelog
+/debian/debhelper-build-stamp
 /debian/.debhelper
+/debian/*.build
+/debian/*.changes
 /debian/*.log
-/debian/leios.theme.plasmoids.digitalclock
+/debian/*.substvars
 
-build/
+/debian/leios.*
+
+/deb-build
+/public
+
 leios.theme.plasmoids.digitalclock_*.dsc
 leios.theme.plasmoids.digitalclock_*.tar.xz
-leios.theme.plasmoids.digitalclock_*.deb
-leios.theme.plasmoids.digitalclock_*.changes
-leios.theme.plasmoids.digitalclock_*.buildinfo
-leios.theme.plasmoids.digitalclock_*.udeb
 leios.theme.plasmoids.digitalclock_*.tar.gz
-leios.theme.plasmoids.digitalclock_*.xz

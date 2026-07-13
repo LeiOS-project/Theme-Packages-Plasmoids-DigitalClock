@@ -1,0 +1,10 @@
+stages:
+  - build
+  - release
+  - publish
+
+variables:
+  DEBIAN_FRONTEND: noninteractive
+
+include:
+  - local: ".gitlab/ci/build.yml"

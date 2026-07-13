@@ -1,0 +1,17 @@
+
+build-deb:
+  stage: build
+  before_script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends build-essential debhelper devscripts
+  script:
+    - make clean
+    - make package
+  artifacts:
+    paths:
+      - deb-build/*.deb
+      - deb-build/*.changes
+      - deb-build/*.buildinfo
+    expire_in: 1 week
+
+
