@@ -224,7 +224,7 @@ MouseArea {
                  * the time label is slightly larger than the date or time zone label
                  * and still fits well into the panel with all the applied margins.
                  */
-                height: Math.min(Plasmoid.configuration.showDate || timeZoneLabel.visible ? main.height * 0.56 : main.height * 0.71,
+                height: Math.min(Plasmoid.configuration.showDate || timeZoneLabel.visible ? main.height * 0.44 : main.height * 0.71,
                                  fontHelper.font.pixelSize)
 
                 font.pixelSize: sizehelper.height
