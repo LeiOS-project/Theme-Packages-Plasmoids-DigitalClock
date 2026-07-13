@@ -11,6 +11,6 @@ Package: leios.theme.plasmoids.digitalclock
 Architecture: all
 Depends: plasma-workspace (>= 4:6.0),
          ${misc:Depends}
-Description: LeiOS Digital Clock Plasma plasmoid
+Description:
  A fork of the KDE Plasma Digital Clock plasmoid for the LeiOS theme,
  featuring a layout fix for automatic date display mode.
