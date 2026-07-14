@@ -1,55 +1,34 @@
 #!/bin/sh
 # postinst for leios.theme.plasmoids.digitalclock
-# Registers the plasmoid with KDE Plasma 6 via kpackagetool6 -g and then
-# refreshes the running Plasma shell(s) so the new UI appears immediately
-# when the package is installed or upgraded via apt/dpkg.
+# Refreshes the Plasma desktop after install or upgrade so the new
+# plasmoid UI is visible immediately, like apt install / apt upgrade.
+#
+# Note: we intentionally do NOT call kpackagetool6 here. The package
+# manager already owns the files under /usr/share/plasma/plasmoids/;
+# kpackagetool6 -r would delete those files on removal and break dpkg's
+# bookkeeping. The only thing left to do is invalidate caches and
+# restart the running Plasma shells.
 
 set -e
 
-PLASMOID_ID="dev.leios.theme-packages.plasmoids.digitalclock"
-PLASMOID_TYPE="Plasma/Applet"
-PLASMOID_DIR="/usr/share/plasma/plasmoids/${PLASMOID_ID}"
-
-# Run kpackagetool6 for every active local session that has a D-Bus user bus.
-# We pass the already-installed system directory so the package manager does
-# not need the build tree after installation.
-kpackage_register_global() {
-    if [ ! -x /usr/bin/kpackagetool6 ]; then
-        return
-    fi
-
-    for session_dir in /run/user/*; do
-        [ -d "${session_dir}" ] || continue
-        uid=$(basename "${session_dir}")
-        bus="${session_dir}/bus"
-        [ -S "${bus}" ] || continue
-
-        # Export a session bus address for this user so kpackagetool6 can
-        # talk to the running Plasma services. Errors are ignored because the
-        # package must install even if no graphical session is active.
-        (
-            export DBUS_SESSION_BUS_ADDRESS="unix:path=${bus}"
-            if kpackagetool6 -g -t "${PLASMOID_TYPE}" -s "${PLASMOID_ID}" >/dev/null 2>&1; then
-                kpackagetool6 -g -t "${PLASMOID_TYPE}" -u "${PLASMOID_DIR}" >/dev/null 2>&1 || true
-            else
-                kpackagetool6 -g -t "${PLASMOID_TYPE}" -i "${PLASMOID_DIR}" >/dev/null 2>&1 || true
-            fi
-        )
-    done
-}
-
-# Fallback refresh: clear QML caches and restart Plasma for every active
-# graphical session. This is safe to run even if kpackagetool6 was already
-# successful, because a clean restart makes the new files visible immediately.
+# Restart Plasma for every active local graphical session that is running
+# a plasma-plasmashell systemd service. This covers installs done via
+# sudo from a terminal as well as package-manager background upgrades.
 refresh_plasma_sessions() {
     if [ -x /usr/bin/systemctl ]; then
         for session_dir in /run/user/*; do
             [ -d "${session_dir}" ] || continue
             uid=$(basename "${session_dir}")
+            # Only act on sessions that actually have a Plasma shell running.
             if systemctl --user -M "${uid}@" is-active plasma-plasmashell.service >/dev/null 2>&1; then
+                # Clear caches so QML is recompiled from the newly installed files.
+                install -d -o "${uid}" -g "${uid}" "${session_dir}" 2>/dev/null || true
                 rm -rf "${session_dir}/plasmashell/qmlcache" 2>/dev/null || true
                 rm -rf "${session_dir}/plasma*" 2>/dev/null || true
                 rm -f "${session_dir}"/*.kcache 2>/dev/null || true
+
+                # Restart the Plasma shell. --wait is not used because we
+                # do not want package installation to block on the desktop.
                 systemctl --user -M "${uid}@" try-restart plasma-plasmashell.service >/dev/null 2>&1 || true
             fi
         done
@@ -58,7 +37,6 @@ refresh_plasma_sessions() {
 
 case "$1" in
     configure|triggered)
-        kpackage_register_global
         refresh_plasma_sessions
     ;;
 
