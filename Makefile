@@ -9,7 +9,7 @@ DEB_BUILD_OUTPUT_DIR := deb-build
 # Guard macro: abort if a variable is empty.
 require_var = $(if $(strip $1),,$(error Required variable is empty: $2))
 
-.PHONY: all clean distclean package install dev-install test publish-apt
+.PHONY: all clean distclean package install update dev-install test publish-apt
 
 all: package
 
@@ -41,13 +41,22 @@ package:
 install: package
 	@:$(call require_var,$(PACKAGE_NAME),PACKAGE_NAME)
 	@:$(call require_var,$(DEB_BUILD_OUTPUT_DIR),DEB_BUILD_OUTPUT_DIR)
-	sudo dpkg -i $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb
+	sudo apt-get install -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
+		(sudo apt-get install -f -y && sudo apt-get install -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
+
+update: package
+	@:$(call require_var,$(PACKAGE_NAME),PACKAGE_NAME)
+	@:$(call require_var,$(DEB_BUILD_OUTPUT_DIR),DEB_BUILD_OUTPUT_DIR)
+	sudo apt-get install --only-upgrade -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb || \
+		(sudo apt-get install -f -y && sudo apt-get install --only-upgrade -y $(DEB_BUILD_OUTPUT_DIR)/$(PACKAGE_NAME)_*.deb)
 
 dev-install:
 	@:$(call require_var,$(PLASMOID_ID),PLASMOID_ID)
-	sudo mkdir -p /usr/share/plasma/plasmoids/$(PLASMOID_ID)
-	sudo rsync -a --delete ./src/ /usr/share/plasma/plasmoids/$(PLASMOID_ID)/
-	sudo chown -R root:root /usr/share/plasma/plasmoids/$(PLASMOID_ID)
+	if kpackagetool6 -g -t Plasma/Applet -s $(PLASMOID_ID) >/dev/null 2>&1; then \
+		sudo kpackagetool6 -g -t Plasma/Applet -u ./src; \
+	else \
+		sudo kpackagetool6 -g -t Plasma/Applet -i ./src; \
+	fi
 	-systemctl --user stop plasma-plasmashell.service
 	rm -rf ~/.cache/plasma* ~/.cache/*.kcache ~/.cache/plasmashell/qmlcache/
 	-systemctl --user start plasma-plasmashell.service

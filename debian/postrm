@@ -1,0 +1,45 @@
+#!/bin/sh
+# postrm for leios.theme.plasmoids.digitalclock
+# Unregisters the global plasmoid via kpackagetool6 -g and clears Plasma
+# caches when the package is removed.
+
+set -e
+
+PLASMOID_ID="dev.leios.theme-packages.plasmoids.digitalclock"
+PLASMOID_TYPE="Plasma/Applet"
+
+case "$1" in
+    remove|purge|disappear)
+        for session_dir in /run/user/*; do
+            [ -d "${session_dir}" ] || continue
+            uid=$(basename "${session_dir}")
+            bus="${session_dir}/bus"
+            [ -S "${bus}" ] || continue
+
+            # Best-effort global unregister; ignore errors because the files
+            # are already gone and kpackagetool6 might not have a session bus.
+            if [ -x /usr/bin/kpackagetool6 ]; then
+                (
+                    export DBUS_SESSION_BUS_ADDRESS="unix:path=${bus}"
+                    kpackagetool6 -g -t "${PLASMOID_TYPE}" -r "${PLASMOID_ID}" >/dev/null 2>&1 || true
+                )
+            fi
+
+            rm -rf "${session_dir}/plasmashell/qmlcache" 2>/dev/null || true
+            rm -rf "${session_dir}/plasma*" 2>/dev/null || true
+            rm -f "${session_dir}"/*.kcache 2>/dev/null || true
+        done
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
+
+exit 0
